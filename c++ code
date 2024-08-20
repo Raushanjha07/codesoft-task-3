@@ -1,2 +1,113 @@
-# codesoft-task-3
-this is the 3 rd task of codesoft c++ internship
+#include <iostream>
+using namespace std;
+
+char board[3][3];  // 3x3 grid for the game board
+char currentPlayer = 'X';  // Start with player 'X'
+
+// Function to initialize the game board
+void initializeBoard() {
+    int k = 1;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            board[i][j] = '0' + k;  // Initialize with numbers 1-9
+            k++;
+        }
+    }
+}
+
+// Function to display the game board
+void displayBoard() {
+    cout << "Tic-Tac-Toe Board:\n";
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            cout << " " << board[i][j] << " ";
+            if (j < 2) cout << "|";
+        }
+        cout << endl;
+        if (i < 2) cout << "---|---|---\n";
+    }
+}
+
+// Function to check if the current player has won
+bool checkWin() {
+    // Check rows and columns
+    for (int i = 0; i < 3; ++i) {
+        if ((board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) ||
+            (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer)) {
+            return true;
+        }
+    }
+    // Check diagonals
+    if ((board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) ||
+        (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer)) {
+        return true;
+    }
+    return false;
+}
+
+// Function to check if the game is a draw
+bool checkDraw() {
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (board[i][j] != 'X' && board[i][j] != 'O') {
+                return false;  // Still empty spots available
+            }
+        }
+    }
+    return true;  // No empty spots and no winner
+}
+
+// Function to switch the current player
+void switchPlayer() {
+    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+}
+
+// Function to update the board with the player's move
+void makeMove(int move) {
+    int row = (move - 1) / 3;
+    int col = (move - 1) % 3;
+    if (board[row][col] != 'X' && board[row][col] != 'O') {
+        board[row][col] = currentPlayer;
+    } else {
+        cout << "Invalid move! Try again.\n";
+        switchPlayer();  // Switch back to the same player
+    }
+}
+
+int main() {
+    char playAgain;
+    do {
+        initializeBoard();
+        currentPlayer = 'X';
+        bool gameWon = false;
+        bool gameDraw = false;
+        
+        while (!gameWon && !gameDraw) {
+            displayBoard();
+            int move;
+            cout << "Player " << currentPlayer << ", enter your move (1-9): ";
+            cin >> move;
+
+            makeMove(move);
+
+            gameWon = checkWin();
+            if (gameWon) {
+                displayBoard();
+                cout << "Player " << currentPlayer << " wins!\n";
+            } else {
+                gameDraw = checkDraw();
+                if (gameDraw) {
+                    displayBoard();
+                    cout << "The game is a draw!\n";
+                } else {
+                    switchPlayer();
+                }
+            }
+        }
+        
+        cout << "Do you want to play again? (y/n): ";
+        cin >> playAgain;
+    } while (playAgain == 'y' || playAgain == 'Y');
+
+    return 0;
+}
